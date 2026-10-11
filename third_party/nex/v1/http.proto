@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package nex.v1;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/ycodeclub/Nex/proto/nex/v1;nexv1";
+
+// HTTPRule maps a gRPC method to a Nex HTTP route and OpenAPI metadata.
+// This is the SSOT for HTTP path + summary/tag.
+// Omit this option for gRPC-only RPCs.
+extend google.protobuf.MethodOptions {
+  HTTPRule http = 50001;
+}
+
+message HTTPRule {
+  // HTTP verb + path (set exactly one of get/post/put/patch/delete).
+  string get = 1;
+  string post = 2;
+  string put = 3;
+  string patch = 4;
+  string delete = 5;
+
+  // Mount on RegisterPublicRoutes when true (default when private is unset/false).
+  optional bool public = 10;
+  // Mount on RegisterPrivateRoutes when true.
+  optional bool private = 11;
+  // Wrap OpenAPI success response in Nex envelope (default true).
+  optional bool envelope = 12;
+
+  string summary = 20;
+  string description = 21;
+  string tag = 22;
+  // Optional route group prefix passed to doc.On, e.g. "/auth".
+  string group = 23;
+}

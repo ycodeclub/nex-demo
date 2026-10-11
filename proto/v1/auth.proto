@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package auth.v1;
+
+option go_package = "github.com/ycodeclub/nex-demo/proto/v1;v1";
+
+import "nex/v1/http.proto";
+
+// Auth 演示登录与当前用户信息（JWT）。
+service Auth {
+  // Login 校验用户名密码并签发 access token。
+  rpc Login(LoginRequest) returns (LoginReply) {
+    option (nex.v1.http) = {
+      post: "/v1/auth/login"
+      public: true
+      summary: "登录"
+      tag: "Auth"
+    };
+  }
+
+  // GetProfile 返回当前 JWT 对应用户资料（私有路由）。
+  rpc GetProfile(GetProfileRequest) returns (GetProfileReply) {
+    option (nex.v1.http) = {
+      get: "/v1/auth/me"
+      private: true
+      summary: "获取当前用户信息"
+      tag: "Auth"
+    };
+  }
+}
+
+message LoginRequest {
+  // 用户名
+  string username = 1;
+  // 密码
+  string password = 2;
+}
+
+message LoginReply {
+  // JWT access token
+  string access_token = 1;
+  // 固定 Bearer
+  string token_type = 2;
+  // 过期秒数
+  int64 expires_in = 3;
+}
+
+message GetProfileRequest {}
+
+message GetProfileReply {
+  string user_id = 1;
+  string username = 2;
+  string display_name = 3;
+  repeated string roles = 4;
+}

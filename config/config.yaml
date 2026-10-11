@@ -1,0 +1,52 @@
+# demo — Nex 运行时配置
+#
+# 默认读取本文件 config/config.yaml；也可用 CONFIG_PATH 指定其它路径。
+
+# ---------- 应用元信息 ----------
+app:
+  # 服务名：日志、指标、启动 banner 会用到
+  name: "demo"
+  # 版本号：建议与发布标签一致，如 v1.2.0
+  version: "v1.0.0"
+
+# ---------- 传输层 ----------
+server:
+  # 监听地址。HTTP 与 gRPC 默认同端口（gRPC 走 HTTP/2 识别）
+  addr: ":8080"
+  http:
+    # 读请求超时（含 body）；过短会影响大文件上传
+    read_timeout: "15s"
+    # 写响应超时；0 = 不限制（SSE / 长连接请保持 0）
+    write_timeout: "0"
+    # Keep-Alive 空闲连接超时
+    idle_timeout: "120s"
+  grpc:
+    # 是否注册标准 gRPC Health
+    health_enabled: true
+    # 是否开启 Server Reflection（grpcurl 调试用；生产建议关）
+    reflection_enabled: true
+
+# ---------- 健康检查 ----------
+health:
+  # 是否挂载 HTTP GET /health（stack 在 enabled 时注册）
+  enabled: true
+
+# ---------- 日志 ----------
+log:
+  # 级别：debug | info | warn | error
+  level: debug
+  # 格式：console（本地彩色单行）| json（生产采集）| text
+  format: console
+  # 输出：stdout | stderr | file（file 需自行扩展 filepath）
+  output: stdout
+
+# ---------- 认证（脚手架 --with auth=jwt） ----------
+# 说明：governance / telemetry 不再由 stack 自动装配。
+# 需要超时、限流、OTel 时在 ioc 里显式挂 nex-contrib 中间件。
+
+auth:
+  jwt:
+    # HMAC 密钥：生产务必替换，或改为环境变量注入
+    secret: "demo-jwt-secret-change-me"
+    # iss 声明；校验 token 时可选用
+    issuer: "nex-demo"
