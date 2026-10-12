@@ -13,6 +13,13 @@ extend google.protobuf.MethodOptions {
   HTTPRule http = 50001;
 }
 
+// FieldRule annotates a message field for OpenAPI / HTTP docs.
+// Proto3 scalars are optional at the wire level; use this to declare
+// business-required fields so OpenAPI marks them as required.
+extend google.protobuf.FieldOptions {
+  FieldRule field = 50002;
+}
+
 message HTTPRule {
   // HTTP verb + path (set exactly one of get/post/put/patch/delete).
   string get = 1;
@@ -33,4 +40,9 @@ message HTTPRule {
   string tag = 22;
   // Optional route group prefix passed to doc.On, e.g. "/auth".
   string group = 23;
+}
+
+message FieldRule {
+  // When true, OpenAPI schema lists this JSON field under required[].
+  bool required = 1;
 }
